@@ -8,19 +8,25 @@ fun printBothFields(player: Player, enemy: Player, showEnemyShips: Boolean = fal
     println()
     for (r in 0..9) {
         print("$r  ")
-        for (c in 0..9) print("${player.field()[r][c]} ")
+        for (c in 0..9) print("${player.field()[r][c].toChar()} ")
         print("      ")
         print("$r  ")
         for (c in 0..9) {
-            val symbol = enemy.field()[r][c]
-            val toPrint = if (!showEnemyShips && symbol == '#') '.' else symbol
-            print("$toPrint ")
+            print("${enemy.field()[r][c].toChar()}")
         }
         println()
     }
 }
 
 fun main() {
+    for (level in Difficulty.entries) {
+        println("${level.name}: ${level.describe()}")
+    }
+    println()
+    for (type in ShipType.entries) {
+        println("${type.name}: размер ${type.size}")
+    }
+    println()
     val player = Player("Вы")
     val enemy = Player("Компьютер")
 
