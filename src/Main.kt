@@ -1,13 +1,53 @@
-fun main() {
-    val player = Player()
-    player.name = "Вы"
+fun printBothFields(player: Player, enemy: Player, showEnemyShips: Boolean = false) {
+    println("=== Поле игрока ${player.name} ===        === Поле игрока ${enemy.name} ===")
+    print("   ")
+    for (c in 0..9) print("$c ")
+    print("      ")
+    print("   ")
+    for (c in 0..9) print("$c ")
+    println()
+    for (r in 0..9) {
+        print("$r  ")
+        for (c in 0..9) print("${player.field()[r][c]} ")
+        print("      ")
+        print("$r  ")
+        for (c in 0..9) {
+            val symbol = enemy.field()[r][c]
+            val toPrint = if (!showEnemyShips && symbol == '#') '.' else symbol
+            print("$toPrint ")
+        }
+        println()
+    }
+}
 
-    player.registerShot(true)    // попал
-    player.registerShot(false)   // промах
-    player.registerShot(true)    // попал
+fun main() {
+    val player = Player("Вы")
+    val enemy = Player("Компьютер")
+
+    player.placeShip(3, 2)
+    player.placeShip(3, 3)
+    player.placeShip(3, 4)
+    player.placeShip(3, 5)
+
+    enemy.placeShip(5, 7)
+    enemy.placeShip(6, 7)
+    enemy.placeShip(7, 7)
+
+    player.markShot(3, 3, true)
+    player.markShot(4, 4, false)
+
+    printBothFields(player, enemy)
+    println()
+
+    player.registerShot(true)
+    player.registerShot(false)
+    player.registerShot(true)
 
     println(player.status())
     // Игрок Вы: палуб осталось 20, выстрелов 3, попаданий 2, точность 66.7%
+
+    println("Выстрелов: ${player.shots}")
+    println("Попаданий: ${player.hits}")
 
     player.takeDamage()
     player.takeDamage()
@@ -16,19 +56,4 @@ fun main() {
 
     player.reset()
     println(player.status())
-    // Игрок Вы: палуб осталось 20, выстрелов 0, попаданий 0, точность 0.0%
-
-    // Второй игрок с другой статистикой
-    val enemy = Player()
-    enemy.name = "Компьютер"
-    enemy.shots = 12
-    enemy.hits = 7
-    enemy.shipsLeft = 15
-    println(enemy.status())
-    // Игрок Компьютер: палуб осталось 15, выстрелов 12, попаданий 7, точность 58.3%
-
-    // Проверка, что takeDamage возвращает false, когда игрок убит
-    enemy.shipsLeft = 1
-    println(enemy.takeDamage())  // false
-    println(enemy.isAlive())     // false
 }
