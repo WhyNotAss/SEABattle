@@ -36,12 +36,10 @@ class Player(val name: String) {
         hits = 0
     }
 
-    // 3.1 Координата внутри поля?
     fun isInside(row: Int, col: Int): Boolean {
         return row in 0..9 && col in 0..9
     }
 
-    // 3.2 Можно ли поставить корабль?
     fun canPlaceShip(startRow: Int, startCol: Int, size: Int, horizontal: Boolean): Boolean {
         for (i in 0 until size) {
             val r = if (horizontal) startRow else startRow + i
@@ -64,7 +62,6 @@ class Player(val name: String) {
         return true
     }
 
-    // 3.3 Остались ли неподбитые палубы?
     fun hasShips(): Boolean {
         for (r in 0..9) {
             for (c in 0..9) {
@@ -74,7 +71,12 @@ class Player(val name: String) {
         return false
     }
 
-    // 4. Поставить целый корабль
+    fun canShootAt (row: Int, col: Int): Boolean {
+        if (!isInside(row,col)) return false
+        val state = _field[row][col]
+        return state != CellState.HIT && state != CellState.MISS
+    }
+
     fun placeShip(startRow: Int, startCol: Int, size: Int, horizontal: Boolean): Boolean {
         if (!canPlaceShip(startRow, startCol, size, horizontal)) {
             return false
@@ -87,22 +89,13 @@ class Player(val name: String) {
         return true
     }
 
-    // 5. Выстрел по полю этого игрока
     fun shoot(row: Int, col: Int): Boolean {
-        if (!isInside(row, col)) {
-            println("Выстрел за границей поля!")
-            return false
-        }
-
-        val current = _field[row][col]
-        if (current == CellState.HIT || current == CellState.MISS) {
-            println("Сюда уже стреляли!")
-            return false
-        }
-
-        val hit = (current == CellState.SHIP)
+       if (!canShootAt(row,col)) {
+           println("Выстрел невозможен: за границей поля или сюда стреляли уже")
+           return false
+       }
+        val hit = (_field[row][col] == CellState.SHIP)
         _field[row][col] = if (hit) CellState.HIT else CellState.MISS
-
         registerShot(hit)
         return hit
     }
